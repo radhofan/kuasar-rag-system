@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from app.api.endpoints import document, answer
 from app.api import question
 
 app = FastAPI(title="RAG System API")

@@ -1,9 +1,9 @@
+import json
 from app.ingestion.embedding import generate_embedding_with_ollama  # Import the embedding function
 import requests
 import numpy as np
-import chromadb  # Assuming you have a vector DB for storing embeddings
+import chromadb  
 
-# Function to calculate cosine similarity between two embeddings
 def cosine_similarity(emb1, emb2):
     dot_product = np.dot(emb1, emb2)
     norm1 = np.linalg.norm(emb1)
@@ -11,63 +11,43 @@ def cosine_similarity(emb1, emb2):
     return dot_product / (norm1 * norm2)
 
 def get_document_from_db(document_id):
-    """
-    Retrieve both the document text and embedding from the ChromaDB vector store.
-    """
-    # Initialize ChromaDB client
-    client = chromadb.PersistentClient(path="app/data/chromadb")  # Ensure this path is correct
-    collection = client.get_collection("embeddings")  # Ensure this collection exists
+    client = chromadb.PersistentClient(path="app/data/chromadb")  
+    collection = client.get_collection("embeddings")  
 
-    # Retrieve document from ChromaDB
     document_data = collection.get(ids=[document_id])
-
-    if not document_data or "documents" not in document_data or not document_data["documents"]:
-        return None, None  # Handle case where document isn't found
     
-    document_text = document_data["documents"][0]  # Extract stored text
-    document_embedding = document_data["embeddings"][0]  # Extract stored embedding
+    document_text = document_data["documents"]  
 
-    return document_text, document_embedding
+    return document_text
 
 def generate_answer_from_ollama(document_id, question):
     try:
-        # Get the document text and embedding from the DB
-        document_text, document_embedding = get_document_from_db(document_id)
-        
-        if document_text is None or document_embedding is None:
-            raise Exception("Document not found in database.")
-
-        # Generate embedding for the question
-        question_embedding = generate_embedding_with_ollama(question)
-        
-        if question_embedding is None:
-            raise Exception("Failed to generate question embedding.")
-
-        # Calculate similarity between the document embedding and the question embedding
-        similarity = cosine_similarity(document_embedding, question_embedding)
-        
-        # Set a threshold to decide if the question is relevant to the document
-        if similarity < 0.7:  # Adjust threshold based on your requirements
-            return "Sorry, I couldn't find a relevant answer to your question."
-
-        # Now `document_text` is properly retrieved and can be used in the prompt
-        prompt = f"Given the following document:\n\n{document_text}\n\nAnswer the following question:\n{question}"
-        answer = call_ollama_for_answer(prompt)  # Assuming the function exists
+        document_text= get_document_from_db(document_id)
+        prompt = f"Given the following document:\n{document_text}.\nAnswer the following question:\n{question}.\n"
+        # print(prompt)
+        answer = call_ollama_for_answer(prompt) 
+        # print("This is the answer: ", answer) 
 
         return answer
     except Exception as e:
         print(f"Error generating answer: {e}")
         return "An error occurred while generating the answer."
 
-# Function to call Ollama for the answer
 def call_ollama_for_answer(prompt: str):
-    url = "http://localhost:11411/v1/answer"  # Ollama endpoint for answering
-    payload = {"prompt": prompt, "model": "answer-model"}
-    
+    url = "http://localhost:11434/api/generate"
+    payload = {"prompt": prompt, "model": "llama3", "stream": False}
+
     try:
+        # Send the request
         response = requests.post(url, json=payload)
+        # print(response.text)
         if response.status_code == 200:
-            return response.json()["answer"]
+            # Extract the answer directly from the response
+            answer = response.json().get("response", "")  # Get the "response" field
+            if answer:  # Check if the answer exists
+                return answer  # Return the plain string
+            else:
+                raise ValueError("Response field is empty")
         else:
             raise Exception("Failed to get an answer from Ollama.")
     except Exception as e:
