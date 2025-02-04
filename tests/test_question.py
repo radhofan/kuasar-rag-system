@@ -3,20 +3,38 @@ from app.main import app
 
 client = TestClient(app)
 
-def test_ask_question():
-    test_file_path = "samples/md/FASTAPI_README.md"
+def test_ask_question(test_params):
+    """Test API with file and question based on command-line parameters."""
+    file_path = test_params.get("file_path")  
+    question = test_params.get("question")
 
-    with open(test_file_path, "rb") as file:
-        response = client.post(
-            "/question/",
-            files={"file": file},
-            data={"question": "What is FastAPI?"}
-        )
+    files = {}
+    file = None  
+
+    if file_path:
+        file = open(file_path, "rb")  
+        files = {"file": file}
+
+    response = client.post(
+        "/question/",
+        files=files,
+        data={"question": question}
+    )
+
+    if file:  
+        file.close()
 
     json_response = response.json()
-    print("Answer:", json_response.get("answer", "No answer found"))
-    print("Document ID:", json_response.get("document_id", "No document ID found"))
+    print("Response:", json_response)
 
-    assert "answer" in json_response
-    assert "document_id" in json_response
-
+    if question and file_path:
+        assert "answer" in json_response
+        assert "document_id" in json_response
+    elif question:
+        assert "answer" in json_response
+        assert json_response.get("document_id") is None
+    elif file_path:
+        assert "document_id" in json_response
+        assert json_response.get("answer") is None
+    else:
+        assert response.status_code == 400  

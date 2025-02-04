@@ -1,8 +1,7 @@
-import json
-from app.ingestion.embedding import generate_embedding_with_ollama  # Import the embedding function
 import requests
 import numpy as np
-import chromadb  
+import chromadb 
+from app.ingestion.embedding import generate_embedding_with_ollama  
 
 def cosine_similarity(emb1, emb2):
     dot_product = np.dot(emb1, emb2)
@@ -28,59 +27,55 @@ def get_similar_document(question):
 
 def generate_answer_from_ollama(document_id, question):
     try:
-        if document_id is not None: 
-            document_text = get_document_from_db(document_id)
-            # print(document_text)
-            original_document_text = document_text
-            document_text = document_text[0]
-            document_text = " ".join(document_text)
-            question_embedded = generate_embedding_with_ollama(question)
-            answer_embedded = generate_embedding_with_ollama(document_text)
-            similarity_score = cosine_similarity(question_embedded, answer_embedded)
-            print("Similarity Score: ", similarity_score)
-            if similarity_score > 0.1:  
-                prompt = f"Given the following document:\n{original_document_text}.\nAnswer the following question:\n{question}.\n"
-                answer = call_ollama_for_answer(prompt)
-                return answer if answer else "The document is relevant, but no specific answer was found."
-
-            elif similarity_score > 0.05:  
-                return "The document is related to your question, but I couldn't find a direct answer."
-
-            else:  
-                return "The document does not seem relevant to your question. Try another document or rephrase the question."
+        document_text = None
+        if document_id:
+            original_document_text = get_document_from_db(document_id)
+            document_text = " ".join(original_document_text[0])
         else:
-            document_text = get_similar_document(question)
-            document_text = document_text["documents"][0]
-            document_text = " ".join(document_text)
-            question_embedded = generate_embedding_with_ollama(question)
-            answer_embedded = generate_embedding_with_ollama(document_text)
-            similarity_score = cosine_similarity(question_embedded, answer_embedded)
-            print("Similarity Score: ", similarity_score)
-            if similarity_score > 0.1:  
-                prompt = f"Given the following document:\n{document_text}.\nAnswer the following question:\n{question}.\n"
-                answer = call_ollama_for_answer(prompt)
-                return answer if answer else "The document is relevant, but no specific answer was found."
+            document_text = " ".join(get_similar_document(question)["documents"][0])
 
-            elif similarity_score > 0.05:  
-                return "The document is related to your question, but I couldn't find a direct answer."
+        question_embedded = generate_embedding_with_ollama(question)
+        answer_embedded = generate_embedding_with_ollama(document_text)
+        similarity_score = cosine_similarity(question_embedded, answer_embedded)
+        
+        print("Similarity Score:", similarity_score)
 
-            else:  
-                return "The document does not seem relevant to your question. Try another document or rephrase the question." 
+        if similarity_score > 0.1:
+            prompt = f"Given the following document:\n{document_text}.\nAnswer the following question:\n{question}.\n"
+            return call_ollama_for_answer(prompt)
+
+        return ("The document is related to your question, but I couldn't find a direct answer."
+                if similarity_score > 0.05 else
+                "The document does not seem relevant to your question. Try another document or rephrase the question.")
     except Exception as e:
         print(f"Error generating answer: {e}")
         return "An error occurred while generating the answer."
 
+
+def estimate_tokens(text: str) -> int:
+    average_tokens_per_word = 0.03  
+    words = text.split()
+    return int(len(words) * average_tokens_per_word)
 
 def call_ollama_for_answer(prompt: str):
     url = "http://localhost:11434/api/generate"
     payload = {"prompt": prompt, "model": "llama3", "stream": False}
 
     try:
+        prompt_tokens = estimate_tokens(prompt)
+        print(f"Estimated prompt tokens: {prompt_tokens}")
+
         response = requests.post(url, json=payload)
         if response.status_code == 200:
-            answer = response.json().get("response", "")  
-            if answer:  
-                return answer  
+            answer = response.json().get("response", "")
+            if answer:
+                answer_tokens = estimate_tokens(answer)
+                print(f"Estimated answer tokens: {answer_tokens}")
+
+                total_tokens = prompt_tokens + answer_tokens
+                print(f"Total estimated tokens used: {total_tokens}")
+
+                return answer, total_tokens
             else:
                 raise ValueError("Response field is empty")
         else:

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.api import question
+from app.stats import stats
 
 app = FastAPI(title="RAG System API")
 
@@ -8,14 +9,5 @@ app = FastAPI(title="RAG System API")
 def root():
     return {"message": "RAG System API is running"}
 
-# Optional: Startup and Shutdown events
-@app.on_event("startup")
-def startup():
-    print("Starting up...") 
-
-@app.on_event("shutdown")
-def shutdown():
-    print("Shutting down...")  
-
-# Question
-app.include_router(question.router, prefix="/question", tags=["Question"]) # Ask Question
+app.include_router(question.router, prefix="/question", tags=["Question"]) 
+app.include_router(stats.router, prefix="/logs", tags=["Logs"]) 
