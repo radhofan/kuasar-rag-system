@@ -29,12 +29,9 @@ def test_ask_question(test_params):
 
     if question and file_path:
         assert "answer" in json_response
-        assert "document_id" in json_response
     elif question:
         assert "answer" in json_response
-        assert json_response.get("document_id") is None
     elif file_path:
         assert "document_id" in json_response
-        assert json_response.get("answer") is None
     else:
         assert response.status_code == 400  

@@ -50,10 +50,7 @@ async def ask_question(
             answer, token_usage = generate_answer_from_ollama(document_id, question)  
             response_time = time.time() - start_time
             log_request(request_id, token_usage, response_time, "SUCCESS")
-            return {
-                "answer": answer,
-                "document_id": document_id,
-            }
+            return {"answer": answer}
 
         return {"document_id": document_id}  
 
