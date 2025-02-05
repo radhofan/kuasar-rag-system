@@ -28,20 +28,30 @@ def get_similar_document(question):
 def generate_answer_from_ollama(document_id, question):
     try:
         document_text = None
+        source = None  
+
         if document_id:
             original_document_text = get_document_from_db(document_id)
             document_text = " ".join(original_document_text[0])
+            source = f"Document ID: {document_id}"
         else:
-            document_text = " ".join(get_similar_document(question)["documents"][0])
+            similar_document = get_similar_document(question)
+            document_text = " ".join(similar_document["documents"][0])
+            source = f"Similar Document Source: {similar_document['source']}"  
 
         question_embedded = generate_embedding_with_ollama(question)
         answer_embedded = generate_embedding_with_ollama(document_text)
         similarity_score = cosine_similarity(question_embedded, answer_embedded)
-        
+
         print("Similarity Score:", similarity_score)
 
         if similarity_score > 0.1:
-            prompt = f"Given the following document:\n{document_text}.\nAnswer the following question:\n{question}.\n"
+            prompt = (f"Based on the given document, provide a clear and precise answer to the question:\n\n"
+                f"Document:\n{document_text}\n\n"
+                f"Question:\n{question}\n\n"
+                f"Your response should include:\n"
+                f"- A Comprehensive and Detailed Answer, and an example if possible\n"
+                f"- A reference to the document, stating 'Based on the latest documentation' or 'According to my sources, near line X' or 'In this section' if possible\n")
             return call_ollama_for_answer(prompt)
 
         return ("The document is related to your question, but I couldn't find a direct answer."
@@ -50,6 +60,7 @@ def generate_answer_from_ollama(document_id, question):
     except Exception as e:
         print(f"Error generating answer: {e}")
         return "An error occurred while generating the answer."
+
 
 
 def estimate_tokens(text: str) -> int:
