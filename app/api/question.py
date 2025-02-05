@@ -11,11 +11,11 @@ from app.stats.stats import log_request
 
 router = APIRouter()
 
-SAVE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "uploads")
+SAVE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 @router.post("/")
-async def ask_question(
+async def ask_question(  
     question: str = Form(""),  
     file: Optional[UploadFile] = File(None),  
 ):
@@ -43,6 +43,8 @@ async def ask_question(
             document_id = store_file_chroma(extracted_text, file.filename)
             if not document_id:
                 raise HTTPException(status_code=500, detail="Failed to generate or store embedding")
+            
+            os.remove(file_path)
 
         if question:  
             answer, token_usage = generate_answer_from_ollama(document_id, question)  

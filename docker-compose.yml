@@ -7,11 +7,14 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app/data/chromadb:/app/data/chromadb  
+      - ./app/data/chromadb:/app/data/chromadb  # Ensure this directory exists
     depends_on:
-      - ollama  
-  
+      - ollama
+    environment:
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434
+
   ollama:
     image: ollama/ollama:latest
     ports:
-      - "11434:11434"  
+      - "11434:11434"
