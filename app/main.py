@@ -4,6 +4,7 @@ from app.stats import stats
 from starlette.staticfiles import StaticFiles
 from pathlib import Path
 
+# Initialize The FastAPI App
 app = FastAPI(title="RAG System API")
 app.mount("/static", StaticFiles(directory=Path.cwd() / 'static'), name="static")
 
@@ -12,5 +13,6 @@ app.mount("/static", StaticFiles(directory=Path.cwd() / 'static'), name="static"
 def root():
     return {"message": "RAG System API is running"}
 
+# API Calls
 app.include_router(question.router, prefix="/question", tags=["Question"]) 
 app.include_router(stats.router, prefix="/logs", tags=["Logs"]) 

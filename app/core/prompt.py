@@ -3,12 +3,14 @@ import numpy as np
 import chromadb 
 from app.ingestion.embedding import generate_embedding_with_ollama  
 
+# Cosine Similarity Test
 def cosine_similarity(emb1, emb2):
     dot_product = np.dot(emb1, emb2)
     norm1 = np.linalg.norm(emb1)
     norm2 = np.linalg.norm(emb2)
     return dot_product / (norm1 * norm2)
 
+# Find Uploaded Document
 def get_document_from_db(document_id):
     client = chromadb.PersistentClient(path="app/data/chromadb")  
     collection = client.get_collection("embeddings")  
@@ -16,6 +18,7 @@ def get_document_from_db(document_id):
     document_text = document_data["documents"]  
     return document_text
 
+# Find Similar Document in DB if None is Provided
 def get_similar_document(question):
     client = chromadb.PersistentClient(path="app/data/chromadb")
     collection = client.get_collection("embeddings") 
@@ -25,11 +28,13 @@ def get_similar_document(question):
     )
     return answer
 
+# Generate Function Call
 def generate_answer_from_ollama(document_id, question):
     try:
         document_text = None
         source = None  
-
+        
+        # Check if Document is Given 
         if document_id:
             original_document_text = get_document_from_db(document_id)
             document_text = " ".join(original_document_text[0])
@@ -39,12 +44,14 @@ def generate_answer_from_ollama(document_id, question):
             document_text = " ".join(similar_document["documents"][0])
             source = f"Similar Document Source: {similar_document['source']}"  
 
+        # Generate Embeddings
         question_embedded = generate_embedding_with_ollama(question)
         answer_embedded = generate_embedding_with_ollama(document_text)
         similarity_score = cosine_similarity(question_embedded, answer_embedded)
 
         print("Similarity Score:", similarity_score)
-
+        
+        # Check Similarity Score
         if similarity_score > 0.1:
             prompt = (f"Based on the given document, provide a clear and precise answer to the question:\n\n"
                 f"Document:\n{document_text}\n\n"
@@ -62,12 +69,13 @@ def generate_answer_from_ollama(document_id, question):
         return "An error occurred while generating the answer."
 
 
-
+# Function to Calculate API Token Usage
 def estimate_tokens(text: str) -> int:
     average_tokens_per_word = 0.03  
     words = text.split()
     return int(len(words) * average_tokens_per_word)
 
+# Function to Generate Answer from llama3
 def call_ollama_for_answer(prompt: str):
     url = "http://localhost:11434/api/generate"
     payload = {"prompt": prompt, "model": "llama3", "stream": False}

@@ -2,6 +2,7 @@ import chromadb
 import uuid 
 import requests
 
+# Generate Ollama Embedding with nomic-embed-text
 def generate_embedding_with_ollama(text: str):
     try:
         url = "http://localhost:11434/api/embeddings"   
@@ -19,7 +20,8 @@ def generate_embedding_with_ollama(text: str):
     except Exception as e:
         print(f"Error generating embedding with Ollama: {e}")
         return None
-    
+
+# Store New Data in ChromaDB
 def store_file_chroma(text: str, file_name: str):
     try:
         client = chromadb.PersistentClient(path="app/data/chromadb")

@@ -4,6 +4,7 @@ from app.main import app
 
 client = TestClient(app)
 
+# Log Function
 def test_logs():
     try:
         response = client.get("/logs/")

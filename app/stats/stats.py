@@ -3,18 +3,19 @@ import os
 import re
 from datetime import datetime
 
-
+# Initialization and Logs File Directory Finding
 router = APIRouter()
-
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LOG_FILE = os.path.join(BASE_DIR, "logs", "monitoring.txt")
 
+# Write Log Request
 def log_request(request_id: str, tokens: int, response_time: float, status: str):
     log_entry = f"{datetime.utcnow()} | request_id: {request_id} | tokens: {tokens} | time: {response_time:.2f}s | status: {status}\n"
     os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
     with open(LOG_FILE, "a") as file:
         file.write(log_entry)
 
+# Get Statistics
 def analyze_logs():
     total_requests = 0
     success_count = 0
@@ -52,6 +53,7 @@ def analyze_logs():
     except FileNotFoundError:
         return {"error": "Log file not found."}
 
+# API Logs Call
 @router.get("/")
 async def analyze_logs_endpoint():
     import os

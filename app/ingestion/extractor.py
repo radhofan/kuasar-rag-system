@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import re
 import html
 
+# PDF Extractor
 def extract_text_from_pdf(pdf_path: str) -> str:
     try:
         doc = fitz.open(pdf_path)
@@ -15,6 +16,7 @@ def extract_text_from_pdf(pdf_path: str) -> str:
         print(f"Error extracting text from PDF: {e}")
         return None
 
+# MD Extractor
 def extract_text_from_md(md_path: str) -> str:
     try:
         with open(md_path, 'r', encoding='utf-8') as file:
@@ -24,6 +26,7 @@ def extract_text_from_md(md_path: str) -> str:
         print(f"Error extracting text from MD: {e}")
         return None
 
+# Clean Text Function
 def clean_text(text: str) -> str:
     text = html.unescape(text)
     soup = BeautifulSoup(text, 'html.parser')
@@ -37,6 +40,7 @@ def clean_text(text: str) -> str:
 
     return clean_text.strip()  
 
+# Main Function
 async def extract_text(file_path: str) -> str:
     try:
         ext = os.path.splitext(file_path)[1].lower()  

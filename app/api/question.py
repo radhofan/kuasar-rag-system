@@ -9,28 +9,32 @@ from app.core.prompt import generate_answer_from_ollama
 from app.ingestion.embedding import store_file_chroma 
 from app.stats.stats import log_request  
 
+# Router Initialization and Finding Data Directory
 router = APIRouter()
-
 SAVE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
+# Main Route Call
 @router.post("/")
-async def ask_question(  
+async def ask_question(
+    # Input Parameters (File and Question)    
     question: str = Form(""),  
     file: Optional[UploadFile] = File(None),  
 ):
     print(f"Received question: {question}")
     print(f"Received file: {file.filename if file else 'No file provided'}")
-
+    
+    # Check if Both Question and File is not Inputted
     if not question and not file:  
         raise HTTPException(status_code=400, detail="Either a question or a file must be provided.")
 
+    
     request_id = str(uuid.uuid4())  
     start_time = time.time()
 
     try:
         document_id = None
-
+        # Process File
         if file:
             file_path = os.path.join(SAVE_DIR, file.filename)
             with open(file_path, "wb") as buffer:
@@ -45,7 +49,7 @@ async def ask_question(
                 raise HTTPException(status_code=500, detail="Failed to generate or store embedding")
             
             os.remove(file_path)
-
+        # Process Question
         if question:  
             answer, token_usage = generate_answer_from_ollama(document_id, question)  
             response_time = time.time() - start_time
