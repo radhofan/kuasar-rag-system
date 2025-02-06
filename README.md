@@ -10,7 +10,7 @@ The system consists of the following components:
 1. **FastAPI**: Provides the API layer for document upload and querying.
 2. **Ollama**: Hosts the local LLM (Llama-3) for generating responses.
 3. **ChromaDB**: Stores document embeddings for current and future use.
-4. **Docker**: Containerizes the entire setup for simplified deployment.
+4. **Docker**: Containerizes the FastAPI and Ollama for setup and deployment.
 
 ### Core Logic
 
@@ -28,12 +28,17 @@ The system consists of the following components:
 
 3. **Cosine Similarity**:
     - When a question is asked, the system retrieves relevant documents based on the question.
-    - Both the document and question are embedded using [nomic-embed-test] from Ollama.
+    - Both the document and question are embedded using `nomic-embed-test` from Ollama.
     - The embeddings are compared using the **Cosine Similarity** metric to determine relevance.
     - Three potential outcomes:
       1. **[similarity > 0.1]**: Documentation exists in ChromaDB and an answer is found in the documentation.
       2. **[similarity > 0.05]**: Documentation exists in ChromaDB but no answer is found.
       3. **[else]**: Documentation does not exist in ChromaDB.
+    - The `llama3` model from Ollama will be used for prompting.
+    - A custom calculation will be used for token usage.
+
+4. **Logging**:
+    - Logging will be done via the `/logs` endpoint, it will return success/failure rates, requests       count, average response time and token usage.
 
 ## Setup Instructions
 
@@ -65,7 +70,7 @@ docker compose up -d
 ```
 
 ### Step 4: Test Query Using Pytest
-The pytest file has two custom parameters which is --file and --question, --file is the path of your file from the root directory, all files are located in either samples/md (for markdown) or samples/pdf (for pdf). Sample files are already given.
+The pytest file has two custom parameters which is `--file` and `--question`, `--file` is the path of your file from the root directory, all files are located in either samples/md (for markdown) or samples/pdf (for pdf). Sample files are already given.
 ```bash
 pytest tests/test_question.py --file=[filepath] --question=[your question] -s
 ```
@@ -73,6 +78,18 @@ Test example:
 ```bash
 pytest tests/test_question.py --file=samples/md/FASTAPI_README.md --question="What is FastAPI" -s
 ```
+### API Monitoring
+```bash
+pytest tests/logs.py -s
+```
+### Ideas for Future Improvements
 
+### **1. Better LLM Model for Faster Prompting**  
+A better LLM model for faster response times would be **GPT-3.5 Turbo**, which is optimized for quick inference while maintaining strong contextual understanding. It provides lower latency and better efficiency compared to larger models like GPT-4, making it ideal for real-time applications.  
 
+### **2. Dedicated Logging/Statistics Library for API Model**  
+For monitoring API performance, **Prometheus with Grafana** is an excellent choice. Prometheus collects real-time metrics such as response time, request counts, and error rates, while Grafana provides an interactive dashboard for visualization and analysis. This combination helps in identifying bottlenecks and optimizing system performance.  
+
+### **3. Improved Algorithm to Determine Question-Document Similarity**  
+To enhance the accuracy of question-document similarity, **SBERT (Sentence-BERT)** can be used instead of traditional cosine similarity. SBERT generates more meaningful and context-aware embeddings, leading to improved retrieval precision and better matching between questions and relevant documents.
 

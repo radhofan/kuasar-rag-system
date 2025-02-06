@@ -20,6 +20,7 @@ def analyze_logs():
     success_count = 0
     failure_count = 0
     total_response_time = 0.0
+    token_usage = 0
 
     try:
         with open(LOG_FILE, "r") as file:
@@ -33,6 +34,7 @@ def analyze_logs():
                     total_response_time += response_time
                     if status.lower() == "success":
                         success_count += 1
+                        token_usage += 1
                     else:
                         failure_count += 1
 
@@ -44,7 +46,8 @@ def analyze_logs():
             "total_requests": total_requests,
             "success_rate": success_rate,
             "failure_rate": failure_rate,
-            "avg_response_time": avg_response_time
+            "avg_response_time": avg_response_time,
+            "total_token_usage": token_usage
         }
     except FileNotFoundError:
         return {"error": "Log file not found."}
