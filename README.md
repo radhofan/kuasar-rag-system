@@ -59,7 +59,7 @@ git clone https://github.com/yourusername/rag-system.git
 cd rag-system
 ```
 
-## Step 2: Build the Docker Container
+### Step 2: Build the Docker Container
 ```bash
 docker compose build
 ```
@@ -82,7 +82,7 @@ pytest tests/test_question.py --file=samples/md/FASTAPI_README.md --question="Wh
 ```bash
 pytest tests/logs.py -s
 ```
-### Ideas for Future Improvements
+## Ideas for Future Improvements
 
 ### **1. Better LLM Model for Faster Prompting**  
 A better LLM model for faster response times would be **GPT-3.5 Turbo**, which is optimized for quick inference while maintaining strong contextual understanding. It provides lower latency and better efficiency compared to larger models like GPT-4, making it ideal for real-time applications.  
