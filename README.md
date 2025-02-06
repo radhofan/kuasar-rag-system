@@ -1,7 +1,7 @@
 
-# Retrieval-Augmented Generation (RAG) System with FastAPI, LangChain, and Ollama
+# Retrieval-Augmented Generation (RAG) System with FastAPI, and Ollama
 
-This project implements a **Retrieval-Augmented Generation (RAG)** system using Python, FastAPI, LangChain, Ollama, and a vector store (e.g., Chroma or FAISS). The system allows users to upload documents, generate embeddings, and query the system for answers with source citations. The entire setup is containerized using Docker for easy deployment.
+This project implements a **Retrieval-Augmented Generation (RAG)** system using Python, FastAPI, Ollama, and ChromaDB. The system allows users to upload documents, generate embeddings, and query the system for answers with source citations. The entire setup is containerized using Docker for easy deployment.
 
 ## System Architecture
 
@@ -85,10 +85,10 @@ pytest tests/logs.py -s
 ## Ideas for Future Improvements
 
 ### **1. Better LLM Model for Faster Prompting**  
-A better LLM model for faster response times would be **GPT-3.5 Turbo**, which is optimized for quick inference while maintaining strong contextual understanding. It provides lower latency and better efficiency compared to larger models like GPT-4, making it ideal for real-time applications.  
+A better LLM model for faster response times would be **GPT-3.5 Turbo**, **GPT 4**, or any other fast and quick LLM models to provide lower latency and better efficiency compared to outdated models like **llama3**, making it ideal for real-time applications.  
 
 ### **2. Dedicated Logging/Statistics Library for API Model**  
-For monitoring API performance, **Prometheus with Grafana** is an excellent choice. Prometheus collects real-time metrics such as response time, request counts, and error rates, while Grafana provides an interactive dashboard for visualization and analysis. This combination helps in identifying bottlenecks and optimizing system performance.  
+For monitoring API performance, **Prometheus with Grafana** would be a suitable choice. Prometheus collects real-time metrics such as response time, request counts, and error rates, while Grafana provides an interactive dashboard for visualization and analysis. This combination helps in identifying bottlenecks and optimizing system performance.  
 
 ### **3. Improved Algorithm to Determine Question-Document Similarity**  
 To enhance the accuracy of question-document similarity, **SBERT (Sentence-BERT)** can be used instead of traditional cosine similarity. SBERT generates more meaningful and context-aware embeddings, leading to improved retrieval precision and better matching between questions and relevant documents.
