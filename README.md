@@ -55,8 +55,8 @@ Before setting up the system, ensure you have the following installed:
 Clone the project repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/rag-system.git
-cd rag-system
+https://github.com/radhofan/kuasar-rag-system.git
+cd kuasar-rag-system
 ```
 
 ### Step 2: Build the Docker Container
