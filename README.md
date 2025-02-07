@@ -103,3 +103,6 @@ To enhance the accuracy of question-document similarity, **SBERT (Sentence-BERT)
 
 ### **4. Dedicated Cloud/Remote Database**
 Currently ChromaDB is stored locally. Further production ready usage would include hosting the ChromaDB storage on potential services such as cloud based (AWS, Azure) or even remote local databases.
+
+### **5. Pre-built Docker Images**
+Hosting pre-built Docker images to avoid the building images repeatedly for end-users/developers
