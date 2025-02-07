@@ -49,6 +49,7 @@ Before setting up the system, ensure you have the following installed:
 - Docker
 - Docker Compose
 - Python 3.10+
+- Port 8000 and 11343 needs to be free since docker will be using it
 
 ### Step 1: Clone the Repository
 
