@@ -93,5 +93,5 @@ For monitoring API performance, **Prometheus with Grafana** would be a suitable 
 ### **3. Improved Algorithm to Determine Question-Document Similarity**  
 To enhance the accuracy of question-document similarity, **SBERT (Sentence-BERT)** can be used instead of traditional cosine similarity. SBERT generates more meaningful and context-aware embeddings, leading to improved retrieval precision and better matching between questions and relevant documents.
 
-### ** 4. Dedicated Cloud/Remote Database**
+### **4. Dedicated Cloud/Remote Database**
 Currently ChromaDB is stored locally. Further production ready usage would include hosting the ChromaDB storage on potential services such as cloud based (AWS, Azure) or even remote local databases.
