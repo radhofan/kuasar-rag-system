@@ -21,3 +21,7 @@ services:
     container_name: kuasar-rag-system-ollama-1
     ports:
       - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama/models  
+volumes:
+  ollama_models:
