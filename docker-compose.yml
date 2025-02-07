@@ -1,4 +1,6 @@
-version: '3'
+
+version: "3.8"
+
 services:
   fastapi:
     build:
@@ -17,8 +19,9 @@ services:
 
   ollama:
     image: ollama/ollama:latest
+    container_name: kuasar-rag-system-ollama-1
     ports:
       - "11434:11434"
-    volumes:
-      - /ollama/models/blobs:/ollama/models/blobs
-      - /ollama/models/manifests:/ollama/models/manifests
+    command: >
+      /bin/sh -c "ollama pull llama3 && ollama pull nomic-embed-text && ollama serve"
+

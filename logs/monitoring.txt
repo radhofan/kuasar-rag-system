@@ -26,3 +26,5 @@
 2025-02-05 13:11:21.699858 | request_id: c0770084-13ed-42c4-8831-258f6b6660ee | tokens: 322 | time: 304.50s | status: SUCCESS
 2025-02-05 13:33:43.970681 | request_id: dd6134ca-a4a5-49d6-b233-f3591efef9f4 | tokens: 325 | time: 343.91s | status: SUCCESS
 2025-02-06 06:35:50.781519 | request_id: f64275f4-021f-42c3-90e0-14d9362012f5 | tokens: 327 | time: 348.04s | status: SUCCESS
+2025-02-07 02:27:41.408571 | request_id: 17051499-fd77-4d5f-8424-d73fab10aa82 | tokens: 0 | time: 0.92s | status: FAILURE
+2025-02-07 02:28:36.885114 | request_id: 485b6714-775a-4468-a5d8-519f5e7f313c | tokens: 0 | time: 0.65s | status: FAILURE
