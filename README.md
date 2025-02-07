@@ -69,7 +69,14 @@ docker compose build
 docker compose up -d
 ```
 
-### Step 4: Test Query Using Pytest
+### Step 4: Pull Ollama Images Online
+```bash
+docker exec -it kuasar-rag-system-ollama-1 /bin/sh
+ollama pull nomic-embed-text
+ollama pull llama3
+```
+
+### Step 5: Test Query Using Pytest
 The pytest file has two custom parameters which is `--file` and `--question`, `--file` is the path of your file from the root directory, all files are located in either samples/md (for markdown) or samples/pdf (for pdf). Sample files are already given.
 ```bash
 pytest tests/test_question.py --file=[filepath] --question=[your question] -s
